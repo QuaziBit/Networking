@@ -56,8 +56,8 @@ class Packet:
         #length_S = str().zfill(width); 
 
         # TEST
-        demo_length = 4
-        demo_str = ''.zfill(demo_length)
+        #demo_length = 4
+        #demo_str = ''.zfill(demo_length)
         # out-put is 0000
         # ============================================================= #
 
@@ -70,7 +70,7 @@ class Packet:
         #compute the checksum
         checksum = hashlib.md5((length_S + seq_num_S + self.msg_S).encode('utf-8'))
         checksum_S = checksum.hexdigest()
-        
+
         #[TEST]
         print("\n=====================================")
         print("Packet: get_byte_S(self):")
@@ -80,6 +80,7 @@ class Packet:
         print("\tchecksum_S: " + checksum_S)
         print("\tmsg_S: " + self.msg_S)
         print("\treturn string or packet: %s" % (length_S + seq_num_S + checksum_S + self.msg_S) )
+        print("\tFinal packet Len: %d" % (  len(length_S + seq_num_S + checksum_S + self.msg_S) ) )
         print("=====================================\n")
 
         #compile into a string
@@ -133,46 +134,77 @@ class Packet:
         print("\tmsg_S: " + msg_S)
         print("\tchecksum_length: %d" % (Packet.checksum_length) )
         print("\tcomputed_checksum_S: " + computed_checksum_S)
+        print("\tFinal packet Len: %d" % (len( length_S + seq_num_S + checksum_S + msg_S )) )
         print("=====================================\n")
 
         #and check if the same
         return checksum_S != computed_checksum_S
 
-    def ack(self, seq_num, ack_flag, msg_S):
+    def ack(self, seq_num, ack_flag):
+
+        # header_length = self.length_S_length
+        # header_checksum = 0 # currently is not used
+        # message = len(ack_flag)
+
         # build acknowledgment packet
+        ack_string = "%d" % (ack_flag)
+        ack_mess = str(ack_string).zfill(self.ack_nak_length)
 
         #convert sequence number of a byte field of seq_num_S_length bytes
         seq_num_S = str(seq_num).zfill(self.seq_num_S_length)
 
         # The packet length: convert length to a byte field of length_S_length bytes
-        packet_length = self.length_S_length + len(seq_num_S) + self.checksum_length + len(self.msg_S)
+        packet_length = self.length_S_length + len(seq_num_S) + len(ack_mess)
 
         # fill in the byte field with the packet_length
         length_S = str(packet_length).zfill(self.length_S_length)
         
-        #compute the checksum
-        checksum = hashlib.md5((length_S + seq_num_S + self.msg_S).encode('utf-8'))
-        checksum_S = checksum.hexdigest()
-
-
         #[TEST]
         print("\n=====================================")
-        print("Packet: ack:")
+        print("Packet: ACK:")
         print("\tseq_num_S: " + seq_num_S)
         print("\tpacket_length: %d" % (packet_length) )
         print("\tlength_S: " + length_S)
-        print("\tchecksum_S: " + checksum_S)
-        print("\tmsg_S: " + msg_S)
-        print("\tchecksum_length: %d" % (Packet.checksum_length) )
+        print("\tack_mess: " + ack_mess)
+        print("\tPackeg final string: %s" % (length_S + seq_num_S + ack_mess) )
+        print("\tFinal packet Len: %d" % (len( length_S + seq_num_S + ack_mess )) )
         print("=====================================\n")
 
-        pass
+        #compile into a string
+        return length_S + seq_num_S + ack_mess
 
-    def nak(self, seq_num, nak_flag, checksum):
+    def nak(self, seq_num, nak_flag):
+
+        # header_length = self.length_S_length
+        # header_checksum = 0 # currently is not used
+        # message = len(nak_flag)
 
         # build negative acknowledgement
+        nak_string = "%d" % (nak_flag)
+        nak_mess = str(nak_string).zfill(self.ack_nak_length)
 
-        pass
+        #convert sequence number of a byte field of seq_num_S_length bytes
+        seq_num_S = str(seq_num).zfill(self.seq_num_S_length)
+
+        # The packet length: convert length to a byte field of length_S_length bytes
+        packet_length = self.length_S_length + len(seq_num_S) + len(nak_mess)
+
+        # fill in the byte field with the packet_length
+        length_S = str(packet_length).zfill(self.length_S_length)
+        
+        #[TEST]
+        print("\n=====================================")
+        print("Packet: NAK:")
+        print("\tseq_num_S: " + seq_num_S)
+        print("\tpacket_length: %d" % (packet_length) )
+        print("\tlength_S: " + length_S)
+        print("\tnak_mess: " + nak_mess)
+        print("\tPackeg final string: %s" % (length_S + seq_num_S + nak_mess) )
+        print("\tFinal packet Len: %d" % (len( length_S + seq_num_S + nak_mess )) )
+        print("=====================================\n")
+
+        #compile into a string
+        return length_S + seq_num_S + nak_mess
         
 
 class RDT:
@@ -223,7 +255,6 @@ class RDT:
 
         # wait for acknowledgments
 
-
         pass
         
     def rdt_2_1_receive(self):
@@ -246,6 +277,10 @@ class RDT:
             #check if we have received enough bytes
             #not enough bytes to read packet length
             if(len(self.byte_buffer) < Packet.length_S_length):
+
+                # send NAK to the sender
+                # sender should resend packet
+
                 return ret_S 
             else:
                 #extract length of packet
@@ -253,6 +288,10 @@ class RDT:
 
                 #not enough bytes to read the whole packet
                 if len(self.byte_buffer) < length:
+
+                    # send NAK to the sender
+                    # sender should resend packet
+
                     return ret_S
                 else:
                     p = Packet
@@ -269,7 +308,15 @@ class RDT:
 
                         # TEST
                         # send ACK to the sender
-                        p.ack(self.seq_num, 0, p.msg_S)
+                        # 1: build ACK package
+                        # 2: Send package
+
+                        ack_p = p.ack(self.seq_num, 1)
+                        self.network.udt_send(ack_p)
+
+                        #nak_p = p.nak(self.seq_num, 0)
+
+                        #p.ack(self.seq_num, 0, p.msg_S)
                     elif isCorrupted == True:
                         # send NAK to the sender
                         # sender should resend packet
