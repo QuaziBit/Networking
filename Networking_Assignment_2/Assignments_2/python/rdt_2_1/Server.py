@@ -38,7 +38,7 @@ if __name__ == '__main__':
     print("")
     while(True):
         #try to receiver message before timeout
-        msg_S = rdt.rdt_1_0_receive()
+        msg_S = rdt.rdt_2_1_receive()
         if msg_S is None:
             if time_of_last_data + timeout < time.time():
                 break
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         print("TO: %s" % (rep_msg_S) )
         print("")
 
-        rdt.rdt_1_0_send(rep_msg_S)
+        rdt.rdt_2_1_send(rep_msg_S)
         
     rdt.disconnect()
 
