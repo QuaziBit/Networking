@@ -1,0 +1,27 @@
+body {
+    background-color: darkgrey;
+}
+
+.board {
+    background-color: #dfe6e9;
+    border: 3px solid orangered;
+    
+    text-align: center;
+    color: #2d3436;
+
+    padding: 1%;
+    display: inline-block;
+    box-sizing: border-box;
+}
+.name {
+    border-bottom: 3px solid orangered;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    font-size: 30px;
+}
+.ships {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    font-size: 20px;
+}

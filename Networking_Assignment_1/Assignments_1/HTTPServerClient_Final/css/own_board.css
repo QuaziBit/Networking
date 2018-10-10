@@ -1,0 +1,159 @@
+body {
+    background-color: darkgrey;
+}
+
+.board {
+    background-color: #dfe6e9;
+    border: 3px solid orangered;
+    
+    text-align: center;
+    color: #2d3436;
+
+    padding: 1%;
+
+    width: 35%;
+
+    display: block;
+    box-sizing: border-box;
+
+    float: left;
+}
+.name {
+    border-bottom: 3px solid orangered;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    font-size: 30px;
+
+    display: block;
+}
+.ships {
+    border: 3px solid black;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    font-size: 25px;
+
+    display: block;
+}
+
+.field {
+    background-color: rgb(69, 178, 241);
+    border: 1px solid green;
+    margin: 1%;
+    padding: 1%;
+
+    width: 10px;
+}
+
+.all_fields {
+    border: 1px solid purple;
+    margin: 0%;
+    padding: 2%;
+    display: block;
+}
+
+.info {
+    background-color: #dfe6e9;
+    border: 3px solid orangered;
+
+    margin: 0% 0% 0% 5%;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    font-size: 30px;
+
+    color: #2d3436;
+
+    display: block;
+
+    width: 35%;
+
+    float: left;
+}
+
+.carrier {
+    margin: 1%;
+    display: block;
+}
+.carrier > span {
+    background-color: #7f8c8d;
+    color: #7f8c8d;
+}
+
+.battleship {
+    margin: 1%;
+    display: block;
+}
+.battleship > span {
+    background-color: #2c3e50;
+    color: #2c3e50;
+}
+
+.cruiser {
+    margin: 1%;
+    display: block;
+}
+.cruiser > span {
+    background-color: #8e44ad;
+    color: #8e44ad;
+}
+
+.submarine {
+    margin: 1%;
+    display: block;
+}
+.submarine > span {
+    background-color: #d35400;
+    color: #d35400;
+}
+
+.destroyer {
+    margin: 1%;
+    display: block;
+}
+.destroyer > span {
+    background-color: #16a085;
+    color: #16a085;
+}
+
+
+.hit {
+    border-top: 4px solid black;
+    margin: 1%;
+    padding: 1% 0% 0% 0%;
+    display: block;
+}
+.hit > span {
+    background-color: #27ae60;
+    color: #27ae60;
+}
+
+.miss {
+    margin: 1%;
+    display: block;
+}
+.miss > span {
+    background-color: #c0392b;
+    color: #c0392b;
+}
+
+.opp_hit {
+    border-top: 4px solid black;
+    margin: 1%;
+    padding: 1% 0% 0% 0%;
+    display: block;
+}
+.opp_hit > span {
+    background-color: #c0392b;
+    color: #c0392b;
+}
+
+.opp_move {
+    margin: 1%;
+    display: block;
+}
+.opp_move > span {
+    background-color: #2d3436;
+    color: #2d3436;
+}

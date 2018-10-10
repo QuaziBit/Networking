@@ -1,0 +1,48 @@
+HTTP SERVER
+1: run server as: py server.py 5000 own_board.txt
+2: exchange two types of messages - fire and result
+   FIRE: fire message needs to communicate the grid location of salvo
+   
+         fire message will be represented as an HTTP POST
+		 
+		 out of bounds: HTTP Not Found
+		 coordinates that have been already fired: HTTP Gone
+		 is not formatted correctly: HTTP Bad Request
+   
+   
+   RESULT: result message needs to communicate whether the salvo 
+           was a hit, a sink, or a miss
+		   
+		   result message will be formatted as an HTTP response
+		   
+		   For a correctly formatted fire request your reply 
+		   will be an HTTP OK message with 
+		   hit= followed by 1 (hit), or 0 (miss)
+		   
+HTTP CLIENT
+1: run client as: python client.py 128.111.52.245 5000 5 7
+
+
+
+
+
+
+Resources: Python Basics
+https://snakify.org/en/lessons/two_dimensional_lists_arrays/
+
+
+Resources: SERVER-CLIENT
+https://www.bogotobogo.com/python/python_network_programming_server_client.php
+https://daanlenaerts.com/blog/2015/06/03/create-a-simple-http-server-with-python-3/
+https://www.junian.net/python-http-server-client/
+https://blog.anvileight.com/posts/simple-python-http-server/#advanced-python-http-server
+https://pymotw.com/3/http.server/
+http://danielhnyk.cz/simple-server-client-aplication-python-3/
+https://stackoverflow.com/questions/336866/how-to-implement-a-minimal-server-for-ajax-in-python
+http://www.nickstricks.net/wp/2015/12/19/python-server-jquery-client-using-ajax-and-websockets/
+
+
+
+
+
+

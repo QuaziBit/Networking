@@ -1,0 +1,17 @@
+1: YouTube video: https://youtu.be/Se8Q9WBlNKc
+   OR
+   YouTube video: https://www.youtube.com/watch?v=Se8Q9WBlNKc&feature=youtu.be
+   
+2: Start first instance of server as: py .\server.py 5000 own_board.txt
+3: Start second instance of server as: py .\server.py 5001 opponent_board.txt
+4: Open web-browser page as [Own Board]: http://127.0.0.1:5000/own_board.html
+5: Open web-browser page as [Own Board]: http://127.0.0.1:5000/opponent_board.html
+6: For the another server instance do the same only with different port.
+7: Click on the blue square on the Opponent board web-page, refresh Own board game.
+OR
+7: Open web-browser page as [Player 1: To make a move]: http://127.0.0.1:5000/?x=n&y=n
+7.1: n: board coordinates from 0 to 9
+8: Open web-browser page as [Player 2: To make a move]: http://127.0.0.1:5001/?x=n&y=n
+9: You can use client.py as:  py .\client.py 127.0.0.1 5000 n n
+   and as  py .\client.py 127.0.0.1 5001 n n
+10: n is board coordinates
