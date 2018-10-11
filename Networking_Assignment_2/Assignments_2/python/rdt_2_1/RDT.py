@@ -221,37 +221,40 @@ class RDT:
         self.network.disconnect()
         
 
-    def rdt_2_1_send(self, msg_S):
+    def rdt_2_1_send(self, msg_S, ack_nak):
 
-        # [Notes]
+        # [INFO]
         # =========================================================================================================== #
-        # Note source: https://astro.temple.edu/~stafford/cis320f05/lecture/chap3/deluxe-content.html
-
-        # Using: positive acknowledgments ("OK") and negative acknowledgments ("Please repeat that."). 
-        # These control messages allow the receiver to let the sender know what has been received correctly, 
-        # and what has been received in error and thus requires repeating.
-        # In a computer network setting, reliable data transfer protocols based on such re-transmission 
-        # are known ARQ (Automatic Repeat reQuest) protocols. 
-
-        # Three additional protocol capabilities are required in ARQ
-        # 1: Error detection
-        # 2: Receiver feedback
-        # 3: Re-transmission
-        # *: known as Stop-and-Wait protocols
-        # 
-        # But we also have to handle corrupted ACKs or NAKs
+        # INFO source: https://astro.temple.edu/~stafford/cis320f05/lecture/chap3/deluxe-content.html
         # =========================================================================================================== #
 
-        # 1: Make Packet: sequence number, message, checksum
-        # 2: Send Packet
-        # 3: wait for acknowledgments
-        # 4: if ACK: send next packet
-        # 5: if NAK: re-sent previous packet
+        # FROM DIAGRAM RDT 2.1 sender
+        # =========================================================================================================== #
+        # Wait for call from API
+        # build packet
+        # send packet
+        # Wait for ACK or NAK
+        # Receive packet and check if it is corrupted or NAK: resend packet
+        # Receive packet and check if it is corrupted or ACK: Wait for call from API
+        # Repeat process
+        # =========================================================================================================== #
 
         # Build and send packet
         p = Packet(self.seq_num, msg_S)
         self.seq_num += 1
         self.network.udt_send(p.get_byte_S())
+
+        if self.seq_num == 1:
+            # first call from application layer
+            pass
+        if (self.seq_num > 1) and  ack_nak == 1:
+            # Nth call from application layer
+            # if ACK then send another packet
+            pass
+        if (self.seq_num > 1) and ack_nak == 0:
+            # Nth call from application layer
+            # if NAK then send another packet
+            pass
 
         # wait for acknowledgments
 
@@ -259,11 +262,19 @@ class RDT:
         
     def rdt_2_1_receive(self):
 
-        # 1: receive packet
-        # 2: retrieve data from the packet: sequence number, message, checksum
-        # 3: verify checksum
-        # 4: if checksum IS OK: sent ACK
-        # 5: if checksum IS NOT OK: sent NAK
+        # FROM DIAGRAM RDT 2.1 sender
+        # =========================================================================================================== #
+        # Wait for call from API
+        # Receive packet and check if it is NOT corrupted and has sequence number:
+        # IF is NOT corrupted and has sequence number:
+        #   extract data, compute checksum
+        #   send ACK packet with: ASK flag and checksum 
+        #   deliver data to the application layer
+        # IF is corrupted or no sequence number:
+        #   compute checksum
+        #   send NAC packet with: NAC flag and checksum 
+        # Repeat process
+        # =========================================================================================================== #
 
         # receive packet
         # ================================================================================ #
@@ -353,7 +364,7 @@ if __name__ == '__main__':
     
     rdt = RDT(args.role, args.server, args.port)
     if args.role == 'client':
-        rdt.rdt_2_1_send('MSG_FROM_CLIENT')
+        rdt.rdt_2_1_send('MSG_FROM_CLIENT', 0)
         sleep(2)
         print(rdt.rdt_2_1_receive())
         rdt.disconnect()
@@ -362,7 +373,7 @@ if __name__ == '__main__':
     else:
         sleep(1)
         print(rdt.rdt_2_1_receive())
-        rdt.rdt_2_1_send('MSG_FROM_SERVER')
+        rdt.rdt_2_1_send('MSG_FROM_SERVER', 0)
         rdt.disconnect()
         
 

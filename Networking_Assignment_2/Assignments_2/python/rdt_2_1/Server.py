@@ -55,7 +55,7 @@ if __name__ == '__main__':
         print("TO: %s" % (rep_msg_S) )
         print("")
 
-        rdt.rdt_2_1_send(rep_msg_S)
+        rdt.rdt_2_1_send(rep_msg_S, 0)
         
     rdt.disconnect()
 
