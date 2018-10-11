@@ -27,7 +27,7 @@ if __name__ == '__main__':
     print("")
     for msg_S in msg_L:
 
-        print("Converting: %s" % (msg_S) )
+        print("Client Converting: %s" % (msg_S) )
 
         rdt.rdt_2_1_send(msg_S)
        
@@ -44,6 +44,6 @@ if __name__ == '__main__':
         
         #print the result
         if msg_S:
-            print("TO: %s\n" % (msg_S) )
+            print("Client TO: %s\n" % (msg_S) )
         
     rdt.disconnect()

@@ -56,8 +56,8 @@ if __name__ == '__main__':
         elif msg_S == "0":
             print("\t\t\tServer NAK")
 
-        print("Converted: %s" % (msg_S) )
-        print("TO: %s" % (rep_msg_S) )
+        print("Server Converted: %s" % (msg_S) )
+        print("Server TO: %s" % (rep_msg_S) )
         print("")
 
         rdt.rdt_2_1_send(rep_msg_S)
