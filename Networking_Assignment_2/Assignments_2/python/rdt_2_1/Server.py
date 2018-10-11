@@ -51,11 +51,16 @@ if __name__ == '__main__':
 
         #print('Converted %s \nto \n%s\n' % (msg_S, rep_msg_S))
 
+        if msg_S == "1":
+            print("\t\t\tServer ACK")
+        elif msg_S == "0":
+            print("\t\t\tServer NAK")
+
         print("Converted: %s" % (msg_S) )
         print("TO: %s" % (rep_msg_S) )
         print("")
 
-        rdt.rdt_2_1_send(rep_msg_S, 0)
+        rdt.rdt_2_1_send(rep_msg_S)
         
     rdt.disconnect()
 

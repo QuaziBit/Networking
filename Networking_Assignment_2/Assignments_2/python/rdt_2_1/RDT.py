@@ -147,7 +147,7 @@ class Packet:
         # message = len(ack_flag)
 
         # build acknowledgment packet
-        ack_string = "%d" % (ack_flag)
+        ack_string = "%s" % (ack_flag)
         ack_mess = str(ack_string).zfill(self.ack_nak_length)
 
         #convert sequence number of a byte field of seq_num_S_length bytes
@@ -180,7 +180,7 @@ class Packet:
         # message = len(nak_flag)
 
         # build negative acknowledgement
-        nak_string = "%d" % (nak_flag)
+        nak_string = "%s" % (nak_flag)
         nak_mess = str(nak_string).zfill(self.ack_nak_length)
 
         #convert sequence number of a byte field of seq_num_S_length bytes
@@ -214,6 +214,8 @@ class RDT:
     ## buffer of bytes read from network
     byte_buffer = '' 
 
+    previous_pkt = None
+
     def __init__(self, role_S, server_S, port):
         self.network = Network.NetworkLayer(role_S, server_S, port)
     
@@ -221,7 +223,7 @@ class RDT:
         self.network.disconnect()
         
 
-    def rdt_2_1_send(self, msg_S, ack_nak):
+    def rdt_2_1_send(self, msg_S):
 
         # [INFO]
         # =========================================================================================================== #
@@ -239,23 +241,64 @@ class RDT:
         # Repeat process
         # =========================================================================================================== #
 
-        # Build and send packet
-        p = Packet(self.seq_num, msg_S)
-        self.seq_num += 1
-        self.network.udt_send(p.get_byte_S())
+        if msg_S == "1":
+            print("\t\t\trdt_2_1_send: ACK")
+        elif msg_S == "0":
+            print("\t\t\trdt_2_1_send: NAK")
 
-        if self.seq_num == 1:
+        if self.seq_num == 1: # very first call
+            # Build and send packet
+            p = Packet(self.seq_num, msg_S)
+            self.previous_pkt = p
+            self.seq_num += 1
+            self.network.udt_send(p.get_byte_S())
+        elif msg_S == "1":
+            # Build and send packet
+            p = Packet(self.seq_num, msg_S)
+            self.previous_pkt = p
+            self.seq_num += 1
+            self.network.udt_send(p.get_byte_S())
+        elif msg_S == "0":
+            # Build and send packet
+            p = self.previous_pkt
+            #p = Packet(self.seq_num, msg_S)
+            #self.seq_num += 1
+            self.network.udt_send(p.get_byte_S())
+
+
+        """
+        if (self.seq_num == 1) and (ack_nak == 0) and (self.previous_pkt is None):
             # first call from application layer
-            pass
-        if (self.seq_num > 1) and  ack_nak == 1:
+
+            # Build and send packet
+            p = Packet(self.seq_num, msg_S)
+            self.previous_pkt = p
+            self.seq_num += 1
+            self.network.udt_send(p.get_byte_S())
+
+            print("\t***First call from API***")
+        if (self.seq_num > 1) and (ack_nak == 1) or (self.previous_pkt is not None):
             # Nth call from application layer
             # if ACK then send another packet
-            pass
-        if (self.seq_num > 1) and ack_nak == 0:
+
+            # Build and send packet
+            p = Packet(self.seq_num, msg_S)
+            self.previous_pkt = p
+            self.seq_num += 1
+            self.network.udt_send(p.get_byte_S())
+
+            print("\t***Call from API with ACK***")
+        if (self.seq_num > 1) and (ack_nak == 0) or (self.previous_pkt is not None):
             # Nth call from application layer
             # if NAK then send another packet
-            pass
+            
+            # send previous packet
+            p = self.previous_pkt
+            self.previous_pkt = p
+            self.network.udt_send(p.get_byte_S())
 
+            print("\t***Call from API with NAC***")
+        """
         # wait for acknowledgments
 
         pass
@@ -292,6 +335,8 @@ class RDT:
                 # send NAK to the sender
                 # sender should resend packet
 
+                #self.rdt_2_1_send("0")
+
                 return ret_S 
             else:
                 #extract length of packet
@@ -302,6 +347,8 @@ class RDT:
 
                     # send NAK to the sender
                     # sender should resend packet
+
+                    #self.rdt_2_1_send("0")
 
                     return ret_S
                 else:
@@ -315,23 +362,28 @@ class RDT:
                     if isCorrupted == False:
                         #create packet from buffer content and add to return string
                         p = Packet.from_byte_S(self.byte_buffer[0:length])
-                        ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
+                        tmp = p.msg_S
+                        #ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
+
+                        if ret_S is None:
+                            ret_S = tmp
+                        else:
+                            ret_S + tmp
+                        
+                        
+                        # TEST
+                        self.rdt_2_1_send("1")
+
+                    elif isCorrupted == True:
 
                         # TEST
-                        # send ACK to the sender
-                        # 1: build ACK package
-                        # 2: Send package
-
-                        ack_p = p.ack(self.seq_num, 1)
-                        self.network.udt_send(ack_p)
-
-                        #nak_p = p.nak(self.seq_num, 0)
-
-                        #p.ack(self.seq_num, 0, p.msg_S)
-                    elif isCorrupted == True:
                         # send NAK to the sender
                         # sender should resend packet
-                        pass
+                        self.rdt_2_1_send("0")
+
+                        #remove the packet bytes from the buffer
+                        self.byte_buffer = self.byte_buffer[length:]
+                        break
 
                     print("\n=====================================")
                     print("RDT: rdt_2_1_receive packet")
@@ -364,7 +416,7 @@ if __name__ == '__main__':
     
     rdt = RDT(args.role, args.server, args.port)
     if args.role == 'client':
-        rdt.rdt_2_1_send('MSG_FROM_CLIENT', 0)
+        rdt.rdt_2_1_send('MSG_FROM_CLIENT')
         sleep(2)
         print(rdt.rdt_2_1_receive())
         rdt.disconnect()
@@ -373,7 +425,7 @@ if __name__ == '__main__':
     else:
         sleep(1)
         print(rdt.rdt_2_1_receive())
-        rdt.rdt_2_1_send('MSG_FROM_SERVER', 0)
+        rdt.rdt_2_1_send('MSG_FROM_SERVER')
         rdt.disconnect()
         
 
