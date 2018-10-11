@@ -1,3 +1,5 @@
+
+# =========================================================================== #
 HTTP SERVER
 1: run server as: py server.py 5000 own_board.txt
 2: exchange two types of messages - fire and result
